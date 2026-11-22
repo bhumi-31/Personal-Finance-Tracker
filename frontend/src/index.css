@@ -1,6 +1,6 @@
 /* ============================================================
-   FINTRACK // FORGE-OS — NEO-BRUTALIST INDUSTRIAL THEME
-   Inspired by Foundry / Forge-OS Operational ERP interfaces
+   FINTRACK // CORE — NEO-BRUTALIST INDUSTRIAL THEME
+   High-contrast, brutalist operational interface
    ============================================================ */
 
 /* ── Design Tokens ───────────────────────────────────────── */
@@ -12,6 +12,8 @@
   --black: #000000;
   --white: #FFFFFF;
   --dark-panel: #111111;
+  --text-main: #111111;
+  --text-sub: #4B5563;
   --border-thick: 2.5px solid #000000;
   --border-medium: 2px solid #000000;
   --border-thin: 1.5px solid #000000;
@@ -35,14 +37,28 @@
 }
 
 [data-theme='dark'] {
-  --canvas-bg: #0F1115;
-  --dot-color: #333333;
-  --white: #1A1D24;
-  --dark-panel: #050608;
+  --canvas-bg: #0B0E14;
+  --dot-color: #2D3342;
+  --white: #161B22;
+  --dark-panel: #0D1117;
+  --black: #000000;
+  --text-main: #F3F4F6;
+  --text-sub: #9CA3AF;
+  --border-thick: 2px solid #384252;
+  --border-medium: 2px solid #384252;
+  --border-thin: 1.5px solid #28303F;
+  --shadow-hard: 4px 4px 0px #000000;
+  --shadow-hard-lg: 6px 6px 0px #000000;
+  --shadow-hard-sm: 2px 2px 0px #000000;
+  --color-green: #34D399;
   --color-green-bg: #064E3B;
+  --color-red: #F87171;
   --color-red-bg: #7F1D1D;
+  --color-blue: #38BDF8;
   --color-blue-bg: #0C4A6E;
+  --color-pink: #FB7185;
   --color-pink-bg: #881337;
+  --color-gray: #9CA3AF;
   --color-gray-bg: #1F2937;
 }
 
@@ -51,7 +67,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  border-radius: 0px !important; /* Strict sharp brutalist corners */
+  border-radius: 0px !important;
 }
 
 html, body {
@@ -60,13 +76,9 @@ html, body {
   background-color: var(--canvas-bg);
   background-image: radial-gradient(var(--dot-color) 1.2px, transparent 1.2px);
   background-size: 20px 20px;
-  color: #111111;
+  color: var(--text-main);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-}
-
-[data-theme='dark'] body {
-  color: #EDEDED;
 }
 
 a {
@@ -74,7 +86,7 @@ a {
   text-decoration: none;
 }
 
-/* ── Top Bar Header (Foundry Navigation) ──────────────────── */
+/* ── Top Bar Header ──────────────────────────────────────── */
 .header {
   position: sticky;
   top: 0;
@@ -99,7 +111,7 @@ a {
   background: var(--yellow-primary);
   border: var(--border-thick);
   box-shadow: var(--shadow-hard-sm);
-  color: var(--black);
+  color: #000000;
   font-family: var(--font-mono);
   font-weight: 900;
   font-size: 1.15rem;
@@ -120,7 +132,7 @@ a {
   font-weight: 900;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--black);
+  color: var(--text-main);
 }
 
 .header-logo-sub {
@@ -128,7 +140,7 @@ a {
   font-size: 0.65rem;
   font-weight: 700;
   letter-spacing: 0.08em;
-  color: var(--color-gray);
+  color: var(--text-sub);
   text-transform: uppercase;
 }
 
@@ -149,22 +161,56 @@ a {
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--black);
+  color: var(--text-main);
   cursor: pointer;
   transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.08s ease;
 }
 
 .nav-tab:hover {
-  background: #FAFAFA;
+  background: rgba(0, 0, 0, 0.05);
   transform: translate(-1px, -1px);
   box-shadow: 3px 3px 0px #000;
 }
 
 .nav-tab.active {
-  background: var(--black);
-  color: var(--white);
+  background: var(--yellow-primary) !important;
+  color: #000000 !important;
+  font-weight: 900;
+  border-color: var(--yellow-primary);
   box-shadow: none;
   transform: translate(2px, 2px);
+}
+
+[data-theme='dark'] .header {
+  background: #161B22 !important;
+  border-bottom: 2px solid #30363D !important;
+}
+
+[data-theme='dark'] .header-logo-title {
+  color: #FFFFFF !important;
+}
+
+[data-theme='dark'] .header-logo-sub {
+  color: #94A3B8 !important;
+}
+
+[data-theme='dark'] .nav-tab {
+  background: #1F2937 !important;
+  color: #F9FAFB !important;
+  border: 1.5px solid #4B5563 !important;
+  box-shadow: 2px 2px 0px #000000 !important;
+}
+
+[data-theme='dark'] .nav-tab:hover {
+  background: #374151 !important;
+  color: #FFFFFF !important;
+}
+
+[data-theme='dark'] .nav-tab.active {
+  background: var(--yellow-primary) !important;
+  color: #000000 !important;
+  border-color: var(--yellow-primary) !important;
+  font-weight: 900 !important;
 }
 
 /* Header Right Status Cluster */
@@ -193,9 +239,13 @@ a {
   color: #065F46;
 }
 
+[data-theme='dark'] .status-online {
+  color: #34D399;
+}
+
 .status-role {
   background: var(--yellow-primary);
-  color: var(--black);
+  color: #000000;
 }
 
 .status-readonly {
@@ -203,9 +253,13 @@ a {
   color: #0369A1;
 }
 
+[data-theme='dark'] .status-readonly {
+  color: #38BDF8;
+}
+
 .btn-logout {
   background: var(--color-red);
-  color: var(--white);
+  color: #FFFFFF;
   border: var(--border-medium);
   box-shadow: var(--shadow-hard-sm);
   padding: 6px 14px;
@@ -250,7 +304,7 @@ a {
   width: 100%;
 }
 
-/* ── Industrial Banners & Cards ──────────────────────────── */
+/* ── Industrial Banners ──────────────────────────────────── */
 .engine-banner {
   background: var(--yellow-primary);
   border: var(--border-thick);
@@ -269,23 +323,36 @@ a {
   font-weight: 900;
   letter-spacing: 0.03em;
   text-transform: uppercase;
-  color: var(--black);
+  color: #000000 !important;
   margin-bottom: 4px;
 }
 
 .engine-banner-info p {
   font-family: var(--font-mono);
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.06em;
-  color: #374151;
+  color: #1F2937 !important;
   text-transform: uppercase;
+}
+
+.engine-banner .filter-select-forge {
+  background: #000000 !important;
+  color: #FFFFFF !important;
+  border: 2px solid #000000 !important;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.engine-banner .filter-select-forge option {
+  background: #111827 !important;
+  color: #FFFFFF !important;
 }
 
 /* Neo-Brutalist Buttons */
 .btn-forge {
-  background: var(--black);
-  color: var(--white);
+  background: #000000;
+  color: #FFFFFF;
   border: var(--border-medium);
   box-shadow: var(--shadow-hard);
   padding: 10px 20px;
@@ -325,12 +392,13 @@ a {
 
 .btn-forge-white {
   background: var(--white);
-  color: var(--black);
+  color: var(--text-main);
+  border: var(--border-medium);
 }
 
 .btn-forge-danger {
   background: var(--color-red);
-  color: var(--white);
+  color: #FFFFFF;
 }
 
 /* ── Metric Blocks / Summary Cards ───────────────────────── */
@@ -369,7 +437,18 @@ a {
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--color-gray);
+  color: var(--text-sub);
+}
+
+[data-theme='dark'] .metric-block {
+  background: #161B22 !important;
+  border: 2px solid #30363D !important;
+  box-shadow: 4px 4px 0px #000000 !important;
+}
+
+[data-theme='dark'] .metric-label {
+  color: #CBD5E1 !important;
+  font-weight: 800;
 }
 
 .metric-glyph {
@@ -379,6 +458,13 @@ a {
   border: var(--border-thin);
   padding: 1px 6px;
   background: var(--canvas-bg);
+  color: var(--text-main);
+}
+
+[data-theme='dark'] .metric-glyph {
+  background: #0D1117 !important;
+  color: #F8FAFC !important;
+  border: 1.5px solid #30363D !important;
 }
 
 .metric-value {
@@ -386,12 +472,53 @@ a {
   font-size: 1.6rem;
   font-weight: 900;
   letter-spacing: -0.02em;
-  color: var(--black);
+  color: var(--text-main);
+}
+
+[data-theme='dark'] .metric-value {
+  color: #FFFFFF !important;
 }
 
 .metric-income { color: #047857; }
 .metric-expense { color: #B91C1C; }
-.metric-balance { color: #111111; }
+.metric-balance { color: var(--text-main); }
+
+[data-theme='dark'] .metric-income { color: #34D399 !important; }
+[data-theme='dark'] .metric-expense { color: #F87171 !important; }
+[data-theme='dark'] .metric-balance { color: #FFFFFF !important; }
+
+/* ── Redis Telemetry Bar ─────────────────────────────────── */
+.telemetry-bar-body {
+  background: #F9FAFB;
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.telemetry-ttl {
+  color: #4B5563;
+}
+
+[data-theme='dark'] .telemetry-bar-body {
+  background: #11141B !important;
+  color: #F3F4F6 !important;
+  border-top: 1px solid #30363D !important;
+}
+
+[data-theme='dark'] .telemetry-bar-body span {
+  color: #F3F4F6;
+}
+
+[data-theme='dark'] .telemetry-ttl {
+  color: #9CA3AF !important;
+}
 
 /* ── Retro Terminal Windows (Charts & Tables) ────────────── */
 .retro-window {
@@ -403,8 +530,8 @@ a {
 }
 
 .retro-window-header {
-  background: var(--black);
-  color: var(--white);
+  background: #000000;
+  color: #FFFFFF !important;
   padding: 8px 16px;
   display: flex;
   align-items: center;
@@ -416,10 +543,24 @@ a {
   text-transform: uppercase;
 }
 
+[data-theme='dark'] .retro-window {
+  background: #161B22 !important;
+  border: 2px solid #30363D !important;
+  box-shadow: 4px 4px 0px #000000 !important;
+}
+
+[data-theme='dark'] .retro-window-header {
+  background: #0D1117 !important;
+  border-bottom: 2px solid #30363D !important;
+  color: #FFFFFF !important;
+}
+
 .retro-window-title {
   display: flex;
   align-items: center;
   gap: 8px;
+  color: #FFFFFF !important;
+  font-weight: 900;
 }
 
 .retro-window-controls {
@@ -427,11 +568,47 @@ a {
   align-items: center;
   gap: 6px;
   font-size: 0.75rem;
-  opacity: 0.8;
+  color: #9CA3AF !important;
 }
 
 .retro-window-body {
   padding: 20px;
+  color: var(--text-main);
+}
+
+[data-theme='dark'] .retro-window-body {
+  background: #161B22 !important;
+  color: #F3F4F6 !important;
+}
+
+/* Recharts styling in dark mode */
+[data-theme='dark'] .recharts-text,
+[data-theme='dark'] .recharts-pie-label-text,
+[data-theme='dark'] .recharts-legend-item-text,
+[data-theme='dark'] text.recharts-cartesian-axis-tick-value {
+  fill: #E2E8F0 !important;
+  color: #E2E8F0 !important;
+}
+
+[data-theme='dark'] .recharts-legend-item-text {
+  color: #E2E8F0 !important;
+}
+
+/* Table Amount Styling */
+.table-amount-income {
+  color: #047857;
+}
+
+.table-amount-expense {
+  color: #B91C1C;
+}
+
+[data-theme='dark'] .table-amount-income {
+  color: #34D399 !important;
+}
+
+[data-theme='dark'] .table-amount-expense {
+  color: #F87171 !important;
 }
 
 /* Charts Grid */
@@ -472,18 +649,18 @@ a {
   font-family: var(--font-mono);
   font-size: 0.8rem;
   font-weight: 700;
-  color: var(--black);
+  color: var(--text-main);
   outline: none;
 }
 
 .filter-input-forge:focus,
 .filter-select-forge:focus {
   background: var(--white);
-  border-color: var(--black);
+  border-color: var(--yellow-primary);
   box-shadow: 2px 2px 0px #000;
 }
 
-/* ── Industrial Matrix Table (Matching Image 2) ─────────── */
+/* ── Matrix Tables ───────────────────────────────────────── */
 .matrix-table-container {
   border: var(--border-thick);
   box-shadow: var(--shadow-hard);
@@ -492,8 +669,8 @@ a {
 }
 
 .matrix-table-header-bar {
-  background: var(--black);
-  color: var(--white);
+  background: #000000;
+  color: #FFFFFF !important;
   padding: 10px 16px;
   font-family: var(--font-mono);
   font-size: 0.82rem;
@@ -505,6 +682,11 @@ a {
   justify-content: space-between;
 }
 
+[data-theme='dark'] .matrix-table-header-bar {
+  background: #1A202C !important;
+  border-bottom: 2px solid #374151;
+}
+
 .matrix-table {
   width: 100%;
   border-collapse: collapse;
@@ -514,7 +696,7 @@ a {
 
 .matrix-table thead tr {
   background: var(--dark-panel);
-  color: var(--white);
+  color: #FFFFFF !important;
 }
 
 .matrix-table th {
@@ -524,30 +706,44 @@ a {
   font-weight: 900;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  color: #FFFFFF !important;
   border-bottom: var(--border-medium);
 }
 
 .matrix-table tbody tr {
-  background: #FFFBEB; /* Light warm industrial tint */
+  background: #FFFBEB;
   border-bottom: 1.5px solid #000000;
   transition: background 0.08s;
 }
 
 .matrix-table tbody tr:nth-child(even) {
-  background: #FEF3C7; /* Alternating yellow-amber tint matching Image 2 */
+  background: #FEF3C7;
 }
 
 .matrix-table tbody tr:hover {
   background: #FDE68A;
 }
 
+[data-theme='dark'] .matrix-table tbody tr {
+  background: #141923 !important;
+  border-bottom: 1px solid #28303F;
+}
+
+[data-theme='dark'] .matrix-table tbody tr:nth-child(even) {
+  background: #1A202C !important;
+}
+
+[data-theme='dark'] .matrix-table tbody tr:hover {
+  background: #252D3D !important;
+}
+
 .matrix-table td {
   padding: 11px 14px;
-  color: #111111;
+  color: var(--text-main);
   vertical-align: middle;
 }
 
-/* Matrix Badges */
+/* Badges */
 .badge-matrix {
   border: 1.5px solid #000000;
   box-shadow: 1.5px 1.5px 0px #000000;
@@ -572,7 +768,7 @@ a {
 
 .badge-admin {
   background: var(--yellow-primary);
-  color: var(--black);
+  color: #000000;
 }
 
 .badge-user {
@@ -585,18 +781,23 @@ a {
   color: #9F1239;
 }
 
+[data-theme='dark'] .badge-income { color: #34D399; }
+[data-theme='dark'] .badge-expense { color: #F87171; }
+[data-theme='dark'] .badge-user { color: #38BDF8; }
+[data-theme='dark'] .badge-readonly { color: #FB7185; }
+
 .tag-category {
   border: 1px solid #111;
   padding: 2px 6px;
   font-size: 0.72rem;
   font-weight: 700;
   background: var(--white);
-  color: var(--black);
+  color: var(--text-main);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
 
-/* ── Forge Auth Portal (Matching Image 1) ───────────────── */
+/* ── Auth Portal ─────────────────────────────────────────── */
 .auth-page-forge {
   min-height: 100vh;
   display: flex;
@@ -615,8 +816,8 @@ a {
 }
 
 .auth-portal-bar {
-  background: var(--black);
-  color: var(--white);
+  background: #000000;
+  color: #FFFFFF;
   padding: 8px 14px;
   display: flex;
   align-items: center;
@@ -637,7 +838,7 @@ a {
   font-weight: 900;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--black);
+  color: #000000 !important;
   margin-bottom: 2px;
 }
 
@@ -646,9 +847,9 @@ a {
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.06em;
-  color: #4B5563;
+  color: #1F2937 !important;
   text-transform: uppercase;
-  border-bottom: var(--border-thin);
+  border-bottom: 1.5px solid #000000;
   padding-bottom: 14px;
   margin-bottom: 20px;
 }
@@ -664,7 +865,7 @@ a {
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--black);
+  color: var(--text-main);
   margin-bottom: 6px;
 }
 
@@ -677,19 +878,19 @@ a {
   font-family: var(--font-mono);
   font-size: 0.85rem;
   font-weight: 700;
-  color: var(--black);
+  color: var(--text-main);
   outline: none;
 }
 
 .auth-form-input:focus {
-  border-color: var(--black);
+  border-color: var(--yellow-primary);
   box-shadow: 3px 3px 0px #000;
 }
 
 .btn-auth-enter {
   width: 100%;
-  background: var(--black);
-  color: var(--white);
+  background: #000000;
+  color: #FFFFFF;
   border: var(--border-thick);
   box-shadow: var(--shadow-hard);
   padding: 12px;
@@ -715,9 +916,9 @@ a {
   box-shadow: none;
 }
 
-/* Quick Role Selector Box (Image 1) */
+/* Quick Role Selector Box */
 .quick-role-section {
-  border-top: var(--border-thin);
+  border-top: 1.5px solid #000000;
   padding-top: 14px;
   text-align: center;
 }
@@ -727,7 +928,7 @@ a {
   font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.08em;
-  color: #4B5563;
+  color: #1F2937 !important;
   text-transform: uppercase;
   margin-bottom: 8px;
 }
@@ -739,7 +940,7 @@ a {
 }
 
 .btn-quick-role {
-  border: var(--border-medium);
+  border: 2px solid #000000;
   box-shadow: var(--shadow-hard-sm);
   padding: 6px;
   font-family: var(--font-mono);
@@ -763,7 +964,7 @@ a {
 
 .role-btn-admin {
   background: var(--yellow-primary);
-  color: var(--black);
+  color: #000000;
 }
 
 .role-btn-user {
@@ -776,11 +977,11 @@ a {
   color: #9F1239;
 }
 
-/* ── Modal (Retro Terminal Style) ────────────────────────── */
+/* ── Modal ───────────────────────────────────────────────── */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.65);
+  background: rgba(0, 0, 0, 0.75);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -798,8 +999,8 @@ a {
 }
 
 .modal-header-forge {
-  background: var(--black);
-  color: var(--white);
+  background: #000000;
+  color: #FFFFFF;
   padding: 10px 16px;
   display: flex;
   align-items: center;
@@ -813,8 +1014,8 @@ a {
 
 .modal-close-forge {
   background: var(--white);
-  color: var(--black);
-  border: 1px solid var(--black);
+  color: var(--text-main);
+  border: 1px solid var(--text-main);
   font-family: var(--font-mono);
   font-size: 0.8rem;
   font-weight: 900;
@@ -824,7 +1025,7 @@ a {
 
 .modal-close-forge:hover {
   background: var(--color-red);
-  color: var(--white);
+  color: #FFFFFF;
 }
 
 .modal-body-forge {
@@ -854,6 +1055,14 @@ a {
   border-color: #065F46;
 }
 
+[data-theme='dark'] .alert-forge-error {
+  color: #FCA5A5;
+}
+
+[data-theme='dark'] .alert-forge-success {
+  color: #6EE7B7;
+}
+
 /* ── Loading Spinner ─────────────────────────────────────── */
 .spinner-forge {
   font-family: var(--font-mono);
@@ -861,7 +1070,7 @@ a {
   font-size: 0.85rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--black);
+  color: var(--text-main);
   display: flex;
   align-items: center;
   justify-content: center;

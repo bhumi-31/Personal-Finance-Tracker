@@ -24,22 +24,22 @@ export default function BarChartComponent({ data, title }) {
       {title && <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem', fontWeight: 900, marginBottom: '12px' }}>{title}</h3>}
       <ResponsiveContainer width="100%" height={280}>
         <RechartsBarChart data={data} margin={{ top: 10, right: 20, left: 10, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="2 2" stroke="#CCCCCC" />
+          <CartesianGrid strokeDasharray="2 2" stroke="#475569" opacity={0.3} />
           <XAxis
             dataKey="month"
-            tick={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700 }}
-            stroke="#000000"
+            tick={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, fill: '#94A3B8' }}
+            stroke="#64748B"
           />
           <YAxis
-            tick={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700 }}
+            tick={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, fill: '#94A3B8' }}
             tickFormatter={(v) => `₹${v}`}
-            stroke="#000000"
+            stroke="#64748B"
           />
           <Tooltip
             contentStyle={{
-              background: '#000000',
+              background: '#0B0F17',
               color: '#FFFFFF',
-              border: '2px solid #000000',
+              border: '2px solid #334155',
               fontFamily: 'var(--font-mono)',
               fontWeight: 800,
               fontSize: '0.75rem',

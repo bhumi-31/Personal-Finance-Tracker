@@ -137,7 +137,7 @@ export default function Dashboard() {
 
       {/* Redis Cache Performance Telemetry Bar (Deliverable Requirement) */}
       <div className="retro-window" style={{ marginBottom: '24px' }}>
-        <div className="retro-window-header" style={{ background: '#111827' }}>
+        <div className="retro-window-header">
           <div className="retro-window-title">
             ★ REDIS CACHE PERFORMANCE TELEMETRY
           </div>
@@ -145,33 +145,20 @@ export default function Dashboard() {
             [ STATUS: {cacheStats?.connected ? 'CONNECTED (PORT 6379)' : 'INACTIVE'} ]
           </div>
         </div>
-        <div
-          style={{
-            background: '#F9FAFB',
-            padding: '12px 18px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: '12px',
-            fontFamily: 'var(--font-mono)',
-            fontSize: '0.78rem',
-            fontWeight: 800,
-          }}
-        >
+        <div className="telemetry-bar-body">
           <div>
             <span>HIT RATE: </span>
-            <span style={{ color: '#047857', fontSize: '0.9rem' }}>
+            <span style={{ color: '#10B981', fontSize: '0.9rem', fontWeight: 900 }}>
               {cacheStats?.hitRate || 'N/A'}
             </span>
           </div>
           <div>
             <span>CACHE HITS: </span>
-            <span style={{ color: '#047857' }}>{cacheStats?.hits ?? 0}</span>
+            <span style={{ color: '#10B981' }}>{cacheStats?.hits ?? 0}</span>
           </div>
           <div>
             <span>CACHE MISSES: </span>
-            <span style={{ color: '#B91C1C' }}>{cacheStats?.misses ?? 0}</span>
+            <span style={{ color: '#EF4444' }}>{cacheStats?.misses ?? 0}</span>
           </div>
           <div>
             <span>TOTAL QUERIES: </span>
@@ -179,7 +166,7 @@ export default function Dashboard() {
           </div>
           <div>
             <span>CACHE TTL: </span>
-            <span style={{ color: '#4B5563' }}>[ANALYTICS: 15M] // [CATEGORIES: 1H]</span>
+            <span className="telemetry-ttl">[ANALYTICS: 15M] // [CATEGORIES: 1H]</span>
           </div>
         </div>
       </div>

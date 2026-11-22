@@ -68,10 +68,10 @@ export default function TransactionList({
                   </span>
                 </td>
                 <td
-                  style={{
-                    fontWeight: 900,
-                    color: tx.type === 'income' ? '#065F46' : '#991B1B',
-                  }}
+                  className={`matrix-amount ${
+                    tx.type === 'income' ? 'table-amount-income' : 'table-amount-expense'
+                  }`}
+                  style={{ fontWeight: 900 }}
                 >
                   {tx.type === 'income' ? '+' : '-'}₹
                   {Number(tx.amount).toLocaleString('en-IN', {
