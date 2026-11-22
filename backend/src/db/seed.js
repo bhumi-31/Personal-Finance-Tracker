@@ -85,9 +85,9 @@ async function seed() {
     await client.query('DELETE FROM transactions WHERE user_id = ANY($1)', [userIds]);
 
     let txCount = 0;
-    // Spread transactions across the first two users (admin & user)
-    for (let i = 0; i < 30; i++) {
-      const userId = i < 15 ? userIds[0] : userIds[1];
+    // Spread transactions across all three users (admin, user, and read-only)
+    for (let i = 0; i < 45; i++) {
+      const userId = i < 15 ? userIds[0] : i < 30 ? userIds[1] : userIds[2];
       const isIncome = Math.random() < 0.3;
       const cat = isIncome ? pick(incomeCats) : pick(expenseCats);
       const amount = isIncome ? randomAmount(1000, 8000) : randomAmount(10, 500);
