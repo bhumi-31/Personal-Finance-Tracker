@@ -36,3 +36,4 @@ export const updateUserRole = async (req, res, next) => {
     next(err);
   }
 };
+
