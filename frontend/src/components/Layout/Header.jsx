@@ -26,7 +26,7 @@ export default function Header() {
           F
         </NavLink>
         <div className="header-logo-text">
-          <span className="header-logo-title">FINTRACK // CORE</span>
+          <span className="header-logo-title">FINTRACK</span>
           <span className="header-logo-sub">PERSONAL FINANCE TRACKER</span>
         </div>
       </div>

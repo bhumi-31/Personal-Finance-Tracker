@@ -1,4 +1,4 @@
-# 💰 FINTRACK // CORE — Personal Finance Tracker
+# 💰 FINTRACK — Personal Finance Tracker
 
 > A production-grade, full-stack Personal Finance Management Platform and Analytics Engine engineered with React 18, Express.js, PostgreSQL, Redis caching, and interactive Recharts data visualization. Built with Role-Based Access Control (RBAC), multi-tier caching with event-driven invalidation, API rate-limiting, and an industrial Neo-Brutalist UI.
 
