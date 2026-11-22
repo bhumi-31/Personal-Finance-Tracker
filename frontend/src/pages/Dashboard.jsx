@@ -11,11 +11,12 @@ export default function Dashboard() {
   const [trendsData, setTrendsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [year, setYear] = useState(new Date().getFullYear());
+  const [year, setYear] = useState('');
   const [month, setMonth] = useState('');
 
   const params = useMemo(() => {
-    const p = { year };
+    const p = {};
+    if (year) p.year = year;
     if (month) p.month = month;
     return p;
   }, [year, month]);
@@ -31,8 +32,8 @@ export default function Dashboard() {
       ]);
 
       setSummary(summaryRes.data);
-      setCategoryData(categoryRes.data);
-      setTrendsData(trendsRes.data);
+      setCategoryData(categoryRes.data?.breakdown || categoryRes.data || []);
+      setTrendsData(trendsRes.data?.trends || trendsRes.data || []);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load dashboard data');
     } finally {
@@ -60,28 +61,31 @@ export default function Dashboard() {
   }, [summary]);
 
   const pieData = useMemo(() => {
-    if (!categoryData || !Array.isArray(categoryData)) return [];
-    return categoryData.map((item) => ({
-      name: item.category || item._id || item.name,
-      value: item.total || item.amount || item.value || 0,
-    }));
+    const list = Array.isArray(categoryData) ? categoryData : (categoryData?.breakdown || []);
+    return list
+      .filter((item) => (item.category_type || item.type || 'expense') === 'expense')
+      .map((item) => ({
+        name: item.category_icon ? `${item.category_icon} ${item.category_name}` : (item.category_name || item.name || 'Other'),
+        value: Number(item.total || item.amount || 0),
+      }))
+      .filter((item) => item.value > 0);
   }, [categoryData]);
 
   const chartTrends = useMemo(() => {
-    if (!trendsData || !Array.isArray(trendsData)) return [];
-    return trendsData.map((item) => ({
-      month: item.month || item._id || item.label,
-      income: item.income || 0,
-      expenses: item.expenses || item.expense || 0,
+    const list = Array.isArray(trendsData) ? trendsData : (trendsData?.trends || []);
+    return list.map((item) => ({
+      month: item.month || item.label || '',
+      income: Number(item.income || 0),
+      expenses: Number(item.expenses || item.expense || 0),
     }));
   }, [trendsData]);
 
   const handleYearChange = useCallback((e) => {
-    setYear(Number(e.target.value));
+    setYear(e.target.value ? Number(e.target.value) : '');
   }, []);
 
   const handleMonthChange = useCallback((e) => {
-    setMonth(e.target.value);
+    setMonth(e.target.value ? Number(e.target.value) : '');
   }, []);
 
   if (loading) {
@@ -109,7 +113,8 @@ export default function Dashboard() {
         <h1>Dashboard</h1>
         <div className="filter-bar">
           <select value={year} onChange={handleYearChange} className="filter-select">
-            {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i).map((y) => (
+            <option value="">All Years</option>
+            {[2026, 2025, 2024, 2023].map((y) => (
               <option key={y} value={y}>{y}</option>
             ))}
           </select>
@@ -134,7 +139,7 @@ export default function Dashboard() {
               <p className="summary-card-value" style={{ color: card.color }}>
                 {card.isCount
                   ? card.value.toLocaleString()
-                  : `$${Number(card.value).toLocaleString('en-US', {
+                  : `₹${Number(card.value).toLocaleString('en-IN', {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })}`}
@@ -146,7 +151,7 @@ export default function Dashboard() {
 
       <div className="charts-grid">
         <div className="chart-card">
-          <PieChartComponent data={pieData} title="Category Breakdown" />
+          <PieChartComponent data={pieData} title="Category Breakdown (Expenses)" />
         </div>
         <div className="chart-card">
           <LineChartComponent data={chartTrends} title="Monthly Trends" />

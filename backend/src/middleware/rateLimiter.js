@@ -12,22 +12,22 @@ export const authLimiter = rateLimit({
 });
 
 /**
- * Transaction limiter – 100 requests per hour.
+ * Transaction limiter – 100 requests per hour (relaxed to 1000 in dev).
  */
 export const transactionLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 100,
+  max: process.env.NODE_ENV === 'production' ? 100 : 1000,
   standardHeaders: true,
   legacyHeaders: false,
   message: { message: 'Too many transaction requests. Please try again later.' },
 });
 
 /**
- * Analytics limiter – 50 requests per hour.
+ * Analytics limiter – 50 requests per hour (relaxed to 1000 in dev).
  */
 export const analyticsLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 50,
+  max: process.env.NODE_ENV === 'production' ? 50 : 1000,
   standardHeaders: true,
   legacyHeaders: false,
   message: { message: 'Too many analytics requests. Please try again later.' },

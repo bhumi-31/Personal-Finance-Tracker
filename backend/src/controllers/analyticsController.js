@@ -1,39 +1,57 @@
 import pool from '../config/db.js';
 import { getCache, setCache, getCacheStats as getRedisCacheStats } from '../config/redis.js';
 
-function ownershipFilter(role, userId) {
-  if (role === 'admin') return { clause: '', params: [] };
-  return { clause: 'WHERE t.user_id = $1', params: [userId] };
-}
-
 export const getSummary = async (req, res, next) => {
   try {
-    const { period = 'month' } = req.query;
-    const cacheKey = `analytics:${req.user.role === 'admin' ? 'admin' : req.user.id}:summary:${period}`;
+    const { year, month } = req.query;
+    const cacheKey = `analytics:${req.user.role === 'admin' ? 'admin' : req.user.id}:summary:${year || 'all'}:${month || 'all'}`;
 
     const cached = await getCache(cacheKey);
     if (cached) return res.json(cached);
 
-    const { clause, params } = ownershipFilter(req.user.role, req.user.id);
-    const dateTrunc = period === 'year' ? 'year' : 'month';
+    const conditions = [];
+    const params = [];
+    let idx = 1;
 
-    const query = `
+    if (req.user.role !== 'admin') {
+      conditions.push(`t.user_id = $${idx++}`);
+      params.push(req.user.id);
+    }
+
+    if (year) {
+      conditions.push(`EXTRACT(YEAR FROM t.date) = $${idx++}`);
+      params.push(parseInt(year));
+    }
+
+    if (month) {
+      conditions.push(`EXTRACT(MONTH FROM t.date) = $${idx++}`);
+      params.push(parseInt(month));
+    }
+
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
+    const totalsQuery = `
       SELECT
-        date_trunc('${dateTrunc}', t.date) AS period,
         COALESCE(SUM(CASE WHEN t.type = 'income'  THEN t.amount ELSE 0 END), 0) AS total_income,
         COALESCE(SUM(CASE WHEN t.type = 'expense' THEN t.amount ELSE 0 END), 0) AS total_expenses,
         COALESCE(SUM(CASE WHEN t.type = 'income'  THEN t.amount ELSE 0 END), 0)
-          - COALESCE(SUM(CASE WHEN t.type = 'expense' THEN t.amount ELSE 0 END), 0) AS balance
+          - COALESCE(SUM(CASE WHEN t.type = 'expense' THEN t.amount ELSE 0 END), 0) AS balance,
+        COUNT(t.id) AS count
       FROM transactions t
-      ${clause}
-      GROUP BY period
-      ORDER BY period DESC
+      ${whereClause}
     `;
 
-    const result = await pool.query(query, params);
+    const totalsResult = await pool.query(totalsQuery, params);
+    const totals = totalsResult.rows[0];
 
-    const response = { summary: result.rows, period };
-    await setCache(cacheKey, response, 900); // 15 min
+    const response = {
+      totalIncome: parseFloat(totals.total_income),
+      totalExpenses: parseFloat(totals.total_expenses),
+      balance: parseFloat(totals.balance),
+      transactionCount: parseInt(totals.count),
+    };
+
+    await setCache(cacheKey, response, 900);
     res.json(response);
   } catch (err) {
     next(err);
@@ -42,12 +60,32 @@ export const getSummary = async (req, res, next) => {
 
 export const getCategoryBreakdown = async (req, res, next) => {
   try {
-    const cacheKey = `analytics:${req.user.role === 'admin' ? 'admin' : req.user.id}:catbreakdown`;
+    const { year, month } = req.query;
+    const cacheKey = `analytics:${req.user.role === 'admin' ? 'admin' : req.user.id}:catbreakdown:${year || 'all'}:${month || 'all'}`;
 
     const cached = await getCache(cacheKey);
     if (cached) return res.json(cached);
 
-    const { clause, params } = ownershipFilter(req.user.role, req.user.id);
+    const conditions = [];
+    const params = [];
+    let idx = 1;
+
+    if (req.user.role !== 'admin') {
+      conditions.push(`t.user_id = $${idx++}`);
+      params.push(req.user.id);
+    }
+
+    if (year) {
+      conditions.push(`EXTRACT(YEAR FROM t.date) = $${idx++}`);
+      params.push(parseInt(year));
+    }
+
+    if (month) {
+      conditions.push(`EXTRACT(MONTH FROM t.date) = $${idx++}`);
+      params.push(parseInt(month));
+    }
+
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
     const query = `
       SELECT
@@ -59,30 +97,20 @@ export const getCategoryBreakdown = async (req, res, next) => {
         COUNT(t.id) AS transaction_count
       FROM transactions t
       JOIN categories c ON t.category_id = c.id
-      ${clause}
+      ${whereClause}
       GROUP BY c.id, c.name, c.icon, c.type
       ORDER BY total DESC
     `;
 
     const result = await pool.query(query, params);
 
-    // Calculate percentages per type
-    const totalExpense = result.rows
-      .filter((r) => r.category_type === 'expense')
-      .reduce((sum, r) => sum + parseFloat(r.total), 0);
-    const totalIncome = result.rows
-      .filter((r) => r.category_type === 'income')
-      .reduce((sum, r) => sum + parseFloat(r.total), 0);
+    const breakdown = result.rows.map((r) => ({
+      ...r,
+      total: parseFloat(r.total),
+      transaction_count: parseInt(r.transaction_count),
+    }));
 
-    const breakdown = result.rows.map((r) => {
-      const typeTotal = r.category_type === 'expense' ? totalExpense : totalIncome;
-      return {
-        ...r,
-        percentage: typeTotal > 0 ? ((parseFloat(r.total) / typeTotal) * 100).toFixed(2) : '0.00',
-      };
-    });
-
-    const response = { breakdown, totals: { income: totalIncome, expense: totalExpense } };
+    const response = { breakdown };
     await setCache(cacheKey, response, 900);
     res.json(response);
   } catch (err) {
@@ -92,15 +120,27 @@ export const getCategoryBreakdown = async (req, res, next) => {
 
 export const getTrends = async (req, res, next) => {
   try {
-    const cacheKey = `analytics:${req.user.role === 'admin' ? 'admin' : req.user.id}:trends`;
+    const { year } = req.query;
+    const cacheKey = `analytics:${req.user.role === 'admin' ? 'admin' : req.user.id}:trends:${year || 'all'}`;
 
     const cached = await getCache(cacheKey);
     if (cached) return res.json(cached);
 
-    const { clause, params } = ownershipFilter(req.user.role, req.user.id);
-    const dateCondition = clause
-      ? `${clause} AND t.date >= NOW() - INTERVAL '12 months'`
-      : `WHERE t.date >= NOW() - INTERVAL '12 months'`;
+    const conditions = [];
+    const params = [];
+    let idx = 1;
+
+    if (req.user.role !== 'admin') {
+      conditions.push(`t.user_id = $${idx++}`);
+      params.push(req.user.id);
+    }
+
+    if (year) {
+      conditions.push(`EXTRACT(YEAR FROM t.date) = $${idx++}`);
+      params.push(parseInt(year));
+    }
+
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
     const query = `
       SELECT
@@ -110,14 +150,21 @@ export const getTrends = async (req, res, next) => {
         COALESCE(SUM(CASE WHEN t.type = 'income'  THEN t.amount ELSE 0 END), 0)
           - COALESCE(SUM(CASE WHEN t.type = 'expense' THEN t.amount ELSE 0 END), 0) AS net
       FROM transactions t
-      ${dateCondition}
+      ${whereClause}
       GROUP BY month
       ORDER BY month ASC
     `;
 
     const result = await pool.query(query, params);
 
-    const response = { trends: result.rows };
+    const trends = result.rows.map((r) => ({
+      month: r.month,
+      income: parseFloat(r.income),
+      expenses: parseFloat(r.expenses),
+      net: parseFloat(r.net),
+    }));
+
+    const response = { trends };
     await setCache(cacheKey, response, 900);
     res.json(response);
   } catch (err) {
