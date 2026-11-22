@@ -8,6 +8,7 @@ export default function Dashboard() {
   const [summary, setSummary] = useState(null);
   const [categoryData, setCategoryData] = useState([]);
   const [trendsData, setTrendsData] = useState([]);
+  const [cacheStats, setCacheStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [year, setYear] = useState('');
@@ -24,15 +25,17 @@ export default function Dashboard() {
     setLoading(true);
     setError('');
     try {
-      const [summaryRes, categoryRes, trendsRes] = await Promise.all([
+      const [summaryRes, categoryRes, trendsRes, cacheRes] = await Promise.all([
         analyticsService.getSummary(params),
         analyticsService.getCategoryBreakdown(params),
         analyticsService.getTrends(params),
+        analyticsService.getCacheStats(),
       ]);
 
       setSummary(summaryRes.data);
       setCategoryData(categoryRes.data?.breakdown || categoryRes.data || []);
       setTrendsData(trendsRes.data?.trends || trendsRes.data || []);
+      setCacheStats(cacheRes.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load telemetry data');
     } finally {
@@ -89,7 +92,7 @@ export default function Dashboard() {
 
   return (
     <div>
-      {/* Engine Banner (Matching Image 2) */}
+      {/* Engine Banner */}
       <div className="engine-banner">
         <div className="engine-banner-info">
           <h1>FINANCIAL ANALYTICS & COMPUTATION ENGINE</h1>
@@ -131,6 +134,55 @@ export default function Dashboard() {
       </div>
 
       {error && <div className="alert-forge alert-forge-error">{error}</div>}
+
+      {/* Redis Cache Performance Telemetry Bar (Deliverable Requirement) */}
+      <div className="retro-window" style={{ marginBottom: '24px' }}>
+        <div className="retro-window-header" style={{ background: '#111827' }}>
+          <div className="retro-window-title">
+            ★ REDIS CACHE PERFORMANCE TELEMETRY
+          </div>
+          <div className="retro-window-controls">
+            [ STATUS: {cacheStats?.connected ? 'CONNECTED (PORT 6379)' : 'INACTIVE'} ]
+          </div>
+        </div>
+        <div
+          style={{
+            background: '#F9FAFB',
+            padding: '12px 18px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '12px',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '0.78rem',
+            fontWeight: 800,
+          }}
+        >
+          <div>
+            <span>HIT RATE: </span>
+            <span style={{ color: '#047857', fontSize: '0.9rem' }}>
+              {cacheStats?.hitRate || 'N/A'}
+            </span>
+          </div>
+          <div>
+            <span>CACHE HITS: </span>
+            <span style={{ color: '#047857' }}>{cacheStats?.hits ?? 0}</span>
+          </div>
+          <div>
+            <span>CACHE MISSES: </span>
+            <span style={{ color: '#B91C1C' }}>{cacheStats?.misses ?? 0}</span>
+          </div>
+          <div>
+            <span>TOTAL QUERIES: </span>
+            <span>{cacheStats?.total ?? 0}</span>
+          </div>
+          <div>
+            <span>CACHE TTL: </span>
+            <span style={{ color: '#4B5563' }}>[ANALYTICS: 15M] // [CATEGORIES: 1H]</span>
+          </div>
+        </div>
+      </div>
 
       {/* Metric Blocks / Summary Cards */}
       <div className="summary-cards-forge">

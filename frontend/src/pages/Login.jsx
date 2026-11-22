@@ -52,7 +52,7 @@ export default function Login() {
         </div>
 
         <div className="auth-portal-body">
-          <h1 className="auth-portal-title">FORGE-OS CORE</h1>
+          <h1 className="auth-portal-title">FINTRACK CORE</h1>
           <p className="auth-portal-sub">[SECURITY LEVEL 4 ACCESS REQUIRED]</p>
 
           {error && <div className="alert-forge alert-forge-error">{error}</div>}

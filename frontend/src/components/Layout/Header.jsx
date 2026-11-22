@@ -26,8 +26,8 @@ export default function Header() {
           F
         </NavLink>
         <div className="header-logo-text">
-          <span className="header-logo-title">FINTRACK // FORGE-OS</span>
-          <span className="header-logo-sub">FINANCIAL OPERATIONS ERP</span>
+          <span className="header-logo-title">FINTRACK // CORE</span>
+          <span className="header-logo-sub">PERSONAL FINANCE TRACKER</span>
         </div>
       </div>
 
