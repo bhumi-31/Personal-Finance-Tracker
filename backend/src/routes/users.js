@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import pool from '../config/db.js';
 import { authenticate, authorize } from '../middleware/auth.js';
 import { body } from 'express-validator';
 import { handleValidation } from '../middleware/validate.js';
+import { getUsers, updateUserRole } from '../controllers/userController.js';
 
 const router = Router();
 
@@ -23,16 +23,7 @@ router.use(authenticate, authorize('admin'));
  *       403:
  *         description: Admin only
  */
-router.get('/', async (req, res, next) => {
-  try {
-    const result = await pool.query(
-      'SELECT id, email, name, role, created_at, updated_at FROM users ORDER BY created_at DESC'
-    );
-    res.json({ users: result.rows });
-  } catch (err) {
-    next(err);
-  }
-});
+router.get('/', getUsers);
 
 /**
  * @swagger
@@ -72,31 +63,7 @@ router.patch(
       .withMessage('Role must be admin, user, or read-only'),
     handleValidation,
   ],
-  async (req, res, next) => {
-    try {
-      const { id } = req.params;
-      const { role } = req.body;
-
-      // Prevent admin from changing their own role
-      if (id === req.user.id) {
-        return res.status(400).json({ message: 'Cannot change your own role' });
-      }
-
-      const result = await pool.query(
-        `UPDATE users SET role = $1, updated_at = NOW() WHERE id = $2
-         RETURNING id, email, name, role, updated_at`,
-        [role, id]
-      );
-
-      if (result.rows.length === 0) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-
-      res.json({ message: 'Role updated', user: result.rows[0] });
-    } catch (err) {
-      next(err);
-    }
-  }
+  updateUserRole
 );
 
 export default router;
