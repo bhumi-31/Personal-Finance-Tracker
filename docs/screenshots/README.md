@@ -10,3 +10,4 @@ Place your screenshots in this folder with the following filenames so they rende
 | `users.png` | **Admin RBAC Matrix** | User matrix page (Admin view) with role elevation dropdowns. |
 
 Once you save the screenshot files with these names in this directory, they will automatically display in GitHub's README showcase table!
+
