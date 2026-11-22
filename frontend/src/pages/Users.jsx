@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { userService } from '../services/userService';
-import LoadingSpinner from '../components/common/LoadingSpinner';
 import { Navigate } from 'react-router-dom';
 
 const ROLES = ['admin', 'user', 'read-only'];
@@ -22,9 +21,9 @@ export default function Users() {
     setError('');
     try {
       const res = await userService.getUsers();
-      setUsers(res.data.users || res.data);
+      setUsers(res.data.users || res.data || []);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to load users');
+      setError(err.response?.data?.message || 'Failed to query user repository');
     } finally {
       setLoading(false);
     }
@@ -45,7 +44,7 @@ export default function Users() {
           )
         );
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to update role');
+        setError(err.response?.data?.message || 'Access privilege update rejected');
       } finally {
         setUpdating(null);
       }
@@ -53,77 +52,101 @@ export default function Users() {
     []
   );
 
-  if (loading) {
-    return (
-      <div className="page-loading">
-        <LoadingSpinner size="large" />
-      </div>
-    );
-  }
-
   return (
-    <div className="users-page">
-      <div className="page-header">
-        <h1>User Management</h1>
+    <div>
+      {/* Engine Banner (Matching Image 2) */}
+      <div className="engine-banner">
+        <div className="engine-banner-info">
+          <h1>OPERATOR ACCESS & PRIVILEGE MATRIX</h1>
+          <p>
+            ROLE-BASED ACCESS CONTROL (RBAC) // ACTIVE IDENTITY: [
+            {currentUser?.email?.toUpperCase()}]
+          </p>
+        </div>
+
+        <div>
+          <span className="status-pill status-online">
+            ● RBAC ENFORCEMENT: ACTIVE
+          </span>
+        </div>
       </div>
 
-      {error && <div className="alert alert-error">{error}</div>}
+      {error && <div className="alert-forge alert-forge-error">{error}</div>}
 
-      <div className="card">
-        <table className="table">
+      {/* User Matrix Table (Matching Image 2) */}
+      <div className="matrix-table-container">
+        <div className="matrix-table-header-bar">
+          <span>★ ACTIVE OPERATOR REGISTRY</span>
+          <span>[ {users.length} ENROLLED ACCOUNTS ]</span>
+        </div>
+
+        <table className="matrix-table">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Joined</th>
-              <th>Actions</th>
+              <th>OPERATOR NAME</th>
+              <th>SYSTEM IDENTIFIER</th>
+              <th>ASSIGNED ROLE</th>
+              <th>TIMESTAMP</th>
+              <th style={{ textAlign: 'right' }}>ACCESS PERMISSION</th>
             </tr>
           </thead>
           <tbody>
             {users.map((u) => {
               const userId = u._id || u.id;
               const isSelf = userId === (currentUser._id || currentUser.id);
+              const roleBadge =
+                u.role === 'admin'
+                  ? 'badge-admin'
+                  : u.role === 'read-only'
+                  ? 'badge-readonly'
+                  : 'badge-user';
+
               return (
                 <tr key={userId}>
-                  <td>
-                    <div className="user-cell">
-                      <span className="user-avatar">
-                        {u.name?.charAt(0).toUpperCase()}
-                      </span>
-                      {u.name}
-                    </div>
+                  <td style={{ fontWeight: 800 }}>
+                    [{u.name?.toUpperCase()}]
                   </td>
-                  <td>{u.email}</td>
+                  <td style={{ fontFamily: 'var(--font-mono)' }}>{u.email}</td>
                   <td>
-                    <span className={`badge badge-${u.role === 'admin' ? 'admin' : u.role === 'read-only' ? 'readonly' : 'user'}`}>
-                      {u.role}
+                    <span className={`badge-matrix ${roleBadge}`}>
+                      {u.role.toUpperCase()}
                     </span>
                   </td>
-                  <td>
+                  <td style={{ fontFamily: 'var(--font-mono)' }}>
                     {u.created_at
-                      ? new Date(u.created_at).toLocaleDateString()
+                      ? new Date(u.created_at).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: '2-digit',
+                        })
                       : '—'}
                   </td>
-                  <td>
+                  <td style={{ textAlign: 'right' }}>
                     {isSelf ? (
-                      <span className="text-muted">Current user</span>
+                      <span
+                        style={{
+                          fontFamily: 'var(--font-mono)',
+                          fontSize: '0.72rem',
+                          fontWeight: 800,
+                          color: '#6B7280',
+                        }}
+                      >
+                        [SESSION OPERATOR]
+                      </span>
                     ) : (
                       <select
                         value={u.role}
                         onChange={(e) => handleRoleChange(userId, e.target.value)}
                         disabled={updating === userId}
-                        className="role-select"
+                        className="filter-select-forge"
+                        style={{ padding: '4px 8px', fontSize: '0.72rem' }}
                       >
                         {ROLES.map((role) => (
                           <option key={role} value={role}>
-                            {role}
+                            ASSIGN: {role.toUpperCase()}
                           </option>
                         ))}
                       </select>
-                    )}
-                    {updating === userId && (
-                      <LoadingSpinner size="small" />
                     )}
                   </td>
                 </tr>

@@ -22,17 +22,17 @@ export default function Register() {
       e.preventDefault();
       setError('');
 
-      if (!name.trim()) return setError('Name is required');
-      if (!email.trim()) return setError('Email is required');
-      if (password.length < 6) return setError('Password must be at least 6 characters');
-      if (password !== confirmPassword) return setError('Passwords do not match');
+      if (!name.trim()) return setError('Operator name required');
+      if (!email.trim()) return setError('System email required');
+      if (password.length < 6) return setError('Passkey must be at least 6 characters');
+      if (password !== confirmPassword) return setError('Security passkeys do not match');
 
       setLoading(true);
       try {
         await register(name, email, password);
         navigate('/dashboard', { replace: true });
       } catch (err) {
-        setError(err.response?.data?.message || 'Registration failed');
+        setError(err.response?.data?.message || 'Registration rejected');
       } finally {
         setLoading(false);
       }
@@ -41,77 +41,92 @@ export default function Register() {
   );
 
   return (
-    <div className="auth-page">
-      <div className="auth-card">
-        <div className="auth-header">
-          <span className="auth-logo">💰</span>
-          <h1>Create Account</h1>
-          <p>Start tracking your finances</p>
+    <div className="auth-page-forge">
+      <div className="auth-portal-window">
+        <div className="auth-portal-bar">
+          <span>★ FINTRACK // OPERATOR INITIALIZATION</span>
+          <span>[ - ] [ × ]</span>
         </div>
 
-        {error && <div className="alert alert-error">{error}</div>}
+        <div className="auth-portal-body">
+          <h1 className="auth-portal-title">NEW OPERATOR</h1>
+          <p className="auth-portal-sub">[ENROLLMENT IN FINTRACK REPOSITORY]</p>
 
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="name">Full Name</label>
-            <input
-              id="name"
-              type="text"
-              placeholder="John Doe"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              autoComplete="name"
-              required
-            />
+          {error && <div className="alert-forge alert-forge-error">{error}</div>}
+
+          <form onSubmit={handleSubmit}>
+            <div className="auth-form-group">
+              <label className="auth-form-label">OPERATOR FULL NAME</label>
+              <input
+                className="auth-form-input"
+                type="text"
+                placeholder="JOHN DOE"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                autoComplete="name"
+                required
+              />
+            </div>
+
+            <div className="auth-form-group">
+              <label className="auth-form-label">SYSTEM IDENTIFIER (EMAIL)</label>
+              <input
+                className="auth-form-input"
+                type="email"
+                placeholder="operator@fintrack.internal"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+                required
+              />
+            </div>
+
+            <div className="auth-form-group">
+              <label className="auth-form-label">SECURITY ACCESS PASS</label>
+              <input
+                className="auth-form-input"
+                type="password"
+                placeholder="Min 6 characters"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="new-password"
+                required
+              />
+            </div>
+
+            <div className="auth-form-group">
+              <label className="auth-form-label">CONFIRM ACCESS PASS</label>
+              <input
+                className="auth-form-input"
+                type="password"
+                placeholder="Repeat security pass"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                autoComplete="new-password"
+                required
+              />
+            </div>
+
+            <button type="submit" className="btn-auth-enter" disabled={loading}>
+              {loading ? 'ENROLLING...' : 'INITIALIZE CREDENTIALS →'}
+            </button>
+          </form>
+
+          <div style={{ textAlign: 'center', marginTop: '14px' }}>
+            <Link
+              to="/login"
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.72rem',
+                fontWeight: 800,
+                color: '#111',
+                textDecoration: 'underline',
+              }}
+            >
+              [ ← RETURN TO AUTHENTICATION PORTAL ]
+            </Link>
           </div>
-
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              id="email"
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
-              id="password"
-              type="password"
-              placeholder="At least 6 characters"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="new-password"
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="confirmPassword">Confirm Password</label>
-            <input
-              id="confirmPassword"
-              type="password"
-              placeholder="Confirm your password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              autoComplete="new-password"
-              required
-            />
-          </div>
-
-          <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
-            {loading ? 'Creating account...' : 'Create Account'}
-          </button>
-        </form>
-
-        <p className="auth-footer">
-          Already have an account? <Link to="/login">Sign in</Link>
-        </p>
+        </div>
       </div>
     </div>
   );

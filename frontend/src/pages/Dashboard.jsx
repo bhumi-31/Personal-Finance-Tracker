@@ -3,7 +3,6 @@ import { analyticsService } from '../services/analyticsService';
 import PieChartComponent from '../components/Charts/PieChart';
 import LineChartComponent from '../components/Charts/LineChart';
 import BarChartComponent from '../components/Charts/BarChart';
-import LoadingSpinner from '../components/common/LoadingSpinner';
 
 export default function Dashboard() {
   const [summary, setSummary] = useState(null);
@@ -35,7 +34,7 @@ export default function Dashboard() {
       setCategoryData(categoryRes.data?.breakdown || categoryRes.data || []);
       setTrendsData(trendsRes.data?.trends || trendsRes.data || []);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to load dashboard data');
+      setError(err.response?.data?.message || 'Failed to load telemetry data');
     } finally {
       setLoading(false);
     }
@@ -53,10 +52,10 @@ export default function Dashboard() {
     const count = summary.transactionCount ?? summary.count ?? 0;
 
     return [
-      { label: 'Total Income', value: totalIncome, icon: '📈', color: '#10b981' },
-      { label: 'Total Expenses', value: totalExpenses, icon: '📉', color: '#f43f5e' },
-      { label: 'Balance', value: balance, icon: '💰', color: balance >= 0 ? '#10b981' : '#f43f5e' },
-      { label: 'Transactions', value: count, icon: '📋', color: '#6366f1', isCount: true },
+      { label: 'TOTAL INFLOW', value: totalIncome, glyph: '▲', colorClass: 'metric-income' },
+      { label: 'TOTAL OUTFLOW', value: totalExpenses, glyph: '▼', colorClass: 'metric-expense' },
+      { label: 'NET LIQUIDITY', value: balance, glyph: '■', colorClass: 'metric-balance' },
+      { label: 'RECORD COUNT', value: count, glyph: '●', isCount: true },
     ];
   }, [summary]);
 
@@ -65,7 +64,7 @@ export default function Dashboard() {
     return list
       .filter((item) => (item.category_type || item.type || 'expense') === 'expense')
       .map((item) => ({
-        name: item.category_icon ? `${item.category_icon} ${item.category_name}` : (item.category_name || item.name || 'Other'),
+        name: `[${(item.category_name || item.name || 'OTHER').toUpperCase()}]`,
         value: Number(item.total || item.amount || 0),
       }))
       .filter((item) => item.value > 0);
@@ -88,76 +87,107 @@ export default function Dashboard() {
     setMonth(e.target.value ? Number(e.target.value) : '');
   }, []);
 
-  if (loading) {
-    return (
-      <div className="page-loading">
-        <LoadingSpinner size="large" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="page-error">
-        <div className="alert alert-error">{error}</div>
-        <button className="btn btn-primary" onClick={fetchData}>
-          Retry
-        </button>
-      </div>
-    );
-  }
-
   return (
-    <div className="dashboard">
-      <div className="page-header">
-        <h1>Dashboard</h1>
-        <div className="filter-bar">
-          <select value={year} onChange={handleYearChange} className="filter-select">
-            <option value="">All Years</option>
+    <div>
+      {/* Engine Banner (Matching Image 2) */}
+      <div className="engine-banner">
+        <div className="engine-banner-info">
+          <h1>FINANCIAL ANALYTICS & COMPUTATION ENGINE</h1>
+          <p>
+            TELEMETRY REPOSITORY // STATUS: REAL-TIME LEDGER SYNC // TIMEFRAME:{' '}
+            {year ? year : 'ALL-TIME'} {month ? `M${month}` : ''}
+          </p>
+        </div>
+
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <select
+            value={year}
+            onChange={handleYearChange}
+            className="filter-select-forge"
+          >
+            <option value="">[ALL YEARS]</option>
             {[2026, 2025, 2024, 2023].map((y) => (
-              <option key={y} value={y}>{y}</option>
+              <option key={y} value={y}>
+                YEAR: {y}
+              </option>
             ))}
           </select>
-          <select value={month} onChange={handleMonthChange} className="filter-select">
-            <option value="">All Months</option>
+          <select
+            value={month}
+            onChange={handleMonthChange}
+            className="filter-select-forge"
+          >
+            <option value="">[ALL MONTHS]</option>
             {[
-              'January', 'February', 'March', 'April', 'May', 'June',
-              'July', 'August', 'September', 'October', 'November', 'December',
+              '01 - JAN', '02 - FEB', '03 - MAR', '04 - APR', '05 - MAY', '06 - JUN',
+              '07 - JUL', '08 - AUG', '09 - SEP', '10 - OCT', '11 - NOV', '12 - DEC',
             ].map((m, i) => (
-              <option key={m} value={i + 1}>{m}</option>
+              <option key={m} value={i + 1}>
+                {m}
+              </option>
             ))}
           </select>
         </div>
       </div>
 
-      <div className="summary-cards">
+      {error && <div className="alert-forge alert-forge-error">{error}</div>}
+
+      {/* Metric Blocks / Summary Cards */}
+      <div className="summary-cards-forge">
         {summaryCards.map((card) => (
-          <div key={card.label} className="summary-card">
-            <div className="summary-card-icon">{card.icon}</div>
-            <div className="summary-card-content">
-              <p className="summary-card-label">{card.label}</p>
-              <p className="summary-card-value" style={{ color: card.color }}>
-                {card.isCount
-                  ? card.value.toLocaleString()
-                  : `₹${Number(card.value).toLocaleString('en-IN', {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}`}
-              </p>
+          <div key={card.label} className="metric-block">
+            <div className="metric-header">
+              <span className="metric-label">{card.label}</span>
+              <span className="metric-glyph">{card.glyph}</span>
+            </div>
+            <div className={`metric-value ${card.colorClass || ''}`}>
+              {card.isCount
+                ? card.value.toLocaleString()
+                : `₹${Number(card.value).toLocaleString('en-IN', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}`}
             </div>
           </div>
         ))}
       </div>
 
-      <div className="charts-grid">
-        <div className="chart-card">
-          <PieChartComponent data={pieData} title="Category Breakdown (Expenses)" />
+      {/* Retro Window Chart Grid */}
+      <div className="charts-grid-forge">
+        <div className="retro-window">
+          <div className="retro-window-header">
+            <div className="retro-window-title">
+              ★ EXPENSE CATEGORY DISTRIBUTION MATRIX
+            </div>
+            <div className="retro-window-controls">[ - ] [ × ]</div>
+          </div>
+          <div className="retro-window-body">
+            <PieChartComponent data={pieData} />
+          </div>
         </div>
-        <div className="chart-card">
-          <LineChartComponent data={chartTrends} title="Monthly Trends" />
+
+        <div className="retro-window">
+          <div className="retro-window-header">
+            <div className="retro-window-title">
+              ★ 12-MONTH CASH FLOW TRENDS
+            </div>
+            <div className="retro-window-controls">[ - ] [ × ]</div>
+          </div>
+          <div className="retro-window-body">
+            <LineChartComponent data={chartTrends} />
+          </div>
         </div>
-        <div className="chart-card chart-card-full">
-          <BarChartComponent data={chartTrends} title="Income vs Expenses" />
+
+        <div className="retro-window full-width">
+          <div className="retro-window-header">
+            <div className="retro-window-title">
+              ★ COMPARATIVE INFLOW VS OUTFLOW VOLUME
+            </div>
+            <div className="retro-window-controls">[ - ] [ × ]</div>
+          </div>
+          <div className="retro-window-body">
+            <BarChartComponent data={chartTrends} />
+          </div>
         </div>
       </div>
     </div>

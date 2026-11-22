@@ -12,21 +12,61 @@ import {
 
 export default function BarChartComponent({ data, title }) {
   if (!data || data.length === 0) {
-    return <div className="chart-empty">No data available</div>;
+    return (
+      <div style={{ padding: '40px', textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 800 }}>
+        [ NO VOLUME DATA LOADED ]
+      </div>
+    );
   }
 
   return (
-    <div className="chart-wrapper">
-      {title && <h3 className="chart-title">{title}</h3>}
-      <ResponsiveContainer width="100%" height={300}>
-        <RechartsBarChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-          <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-          <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `$${v}`} />
-          <Tooltip formatter={(value) => `$${Number(value).toLocaleString()}`} />
-          <Legend />
-          <Bar dataKey="income" fill="#10b981" name="Income" radius={[4, 4, 0, 0]} />
-          <Bar dataKey="expenses" fill="#f43f5e" name="Expenses" radius={[4, 4, 0, 0]} />
+    <div>
+      {title && <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem', fontWeight: 900, marginBottom: '12px' }}>{title}</h3>}
+      <ResponsiveContainer width="100%" height={280}>
+        <RechartsBarChart data={data} margin={{ top: 10, right: 20, left: 10, bottom: 5 }}>
+          <CartesianGrid strokeDasharray="2 2" stroke="#CCCCCC" />
+          <XAxis
+            dataKey="month"
+            tick={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700 }}
+            stroke="#000000"
+          />
+          <YAxis
+            tick={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700 }}
+            tickFormatter={(v) => `₹${v}`}
+            stroke="#000000"
+          />
+          <Tooltip
+            contentStyle={{
+              background: '#000000',
+              color: '#FFFFFF',
+              border: '2px solid #000000',
+              fontFamily: 'var(--font-mono)',
+              fontWeight: 800,
+              fontSize: '0.75rem',
+            }}
+            formatter={(value) => `₹${Number(value).toLocaleString('en-IN')}`}
+          />
+          <Legend
+            wrapperStyle={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.72rem',
+              fontWeight: 800,
+            }}
+          />
+          <Bar
+            dataKey="income"
+            fill="#10B981"
+            stroke="#000000"
+            strokeWidth={1.5}
+            name="INFLOW (+)"
+          />
+          <Bar
+            dataKey="expenses"
+            fill="#EF4444"
+            stroke="#000000"
+            strokeWidth={1.5}
+            name="OUTFLOW (-)"
+          />
         </RechartsBarChart>
       </ResponsiveContainer>
     </div>

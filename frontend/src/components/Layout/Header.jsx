@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 
@@ -13,46 +13,67 @@ export default function Header() {
     navigate('/login');
   }, [logout, navigate]);
 
-  const roleBadgeClass = user?.role === 'admin'
-    ? 'badge badge-admin'
+  const roleClass = user?.role === 'admin'
+    ? 'status-role'
     : user?.role === 'read-only'
-    ? 'badge badge-readonly'
-    : 'badge badge-user';
+    ? 'status-readonly'
+    : 'status-role';
 
   return (
     <header className="header">
       <div className="header-left">
-        <Link to="/dashboard" className="header-logo">
-          <span className="logo-icon">💰</span>
-          <span className="logo-text">FinTracker</span>
-        </Link>
+        <NavLink to="/dashboard" className="header-logo-badge">
+          F
+        </NavLink>
+        <div className="header-logo-text">
+          <span className="header-logo-title">FINTRACK // FORGE-OS</span>
+          <span className="header-logo-sub">FINANCIAL OPERATIONS ERP</span>
+        </div>
       </div>
 
       <nav className="header-nav">
-        <Link to="/dashboard" className="nav-link">Dashboard</Link>
-        <Link to="/transactions" className="nav-link">Transactions</Link>
+        <NavLink
+          to="/dashboard"
+          className={({ isActive }) => `nav-tab ${isActive ? 'active' : ''}`}
+        >
+          OVERVIEW
+        </NavLink>
+        <NavLink
+          to="/transactions"
+          className={({ isActive }) => `nav-tab ${isActive ? 'active' : ''}`}
+        >
+          TRANSACTIONS
+        </NavLink>
         {user?.role === 'admin' && (
-          <Link to="/users" className="nav-link">Users</Link>
+          <NavLink
+            to="/users"
+            className={({ isActive }) => `nav-tab ${isActive ? 'active' : ''}`}
+          >
+            USER MATRIX
+          </NavLink>
         )}
       </nav>
 
       <div className="header-right">
         <button
-          className="theme-toggle"
+          className="nav-tab"
           onClick={toggleTheme}
-          aria-label="Toggle theme"
-          title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+          style={{ fontSize: '0.72rem', padding: '5px 10px' }}
+          title="Toggle system mode"
         >
-          {theme === 'light' ? '🌙' : '☀️'}
+          {theme === 'light' ? '[MODE: DARK]' : '[MODE: LIGHT]'}
         </button>
 
-        <div className="user-info">
-          <span className="user-name">{user?.name}</span>
-          <span className={roleBadgeClass}>{user?.role}</span>
-        </div>
+        <span className="status-pill status-online">
+          ● SYSTEM ONLINE
+        </span>
 
-        <button className="btn btn-outline btn-sm" onClick={handleLogout}>
-          Logout
+        <span className={`status-pill ${roleClass}`}>
+          ROLE: {user?.role ? user.role.toUpperCase() : 'USER'}
+        </span>
+
+        <button className="btn-logout" onClick={handleLogout}>
+          LOGOUT
         </button>
       </div>
     </header>

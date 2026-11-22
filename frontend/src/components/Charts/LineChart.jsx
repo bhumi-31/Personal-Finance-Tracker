@@ -10,40 +10,65 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-export default function LineChartComponent({ data, title, lines }) {
-  const defaultLines = [
-    { dataKey: 'income', stroke: '#10b981', name: 'Income' },
-    { dataKey: 'expenses', stroke: '#f43f5e', name: 'Expenses' },
-  ];
-
-  const lineConfig = lines || defaultLines;
-
+export default function LineChartComponent({ data, title }) {
   if (!data || data.length === 0) {
-    return <div className="chart-empty">No data available</div>;
+    return (
+      <div style={{ padding: '40px', textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 800 }}>
+        [ NO TIMELINE TRENDS LOADED ]
+      </div>
+    );
   }
 
   return (
-    <div className="chart-wrapper">
-      {title && <h3 className="chart-title">{title}</h3>}
-      <ResponsiveContainer width="100%" height={300}>
-        <RechartsLineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-          <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-          <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `$${v}`} />
-          <Tooltip formatter={(value) => `$${Number(value).toLocaleString()}`} />
-          <Legend />
-          {lineConfig.map((line) => (
-            <Line
-              key={line.dataKey}
-              type="monotone"
-              dataKey={line.dataKey}
-              stroke={line.stroke}
-              name={line.name}
-              strokeWidth={2}
-              dot={{ r: 4 }}
-              activeDot={{ r: 6 }}
-            />
-          ))}
+    <div>
+      {title && <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem', fontWeight: 900, marginBottom: '12px' }}>{title}</h3>}
+      <ResponsiveContainer width="100%" height={280}>
+        <RechartsLineChart data={data} margin={{ top: 10, right: 20, left: 10, bottom: 5 }}>
+          <CartesianGrid strokeDasharray="2 2" stroke="#CCCCCC" />
+          <XAxis
+            dataKey="month"
+            tick={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700 }}
+            stroke="#000000"
+          />
+          <YAxis
+            tick={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700 }}
+            tickFormatter={(v) => `₹${v}`}
+            stroke="#000000"
+          />
+          <Tooltip
+            contentStyle={{
+              background: '#000000',
+              color: '#FFFFFF',
+              border: '2px solid #000000',
+              fontFamily: 'var(--font-mono)',
+              fontWeight: 800,
+              fontSize: '0.75rem',
+            }}
+            formatter={(value) => `₹${Number(value).toLocaleString('en-IN')}`}
+          />
+          <Legend
+            wrapperStyle={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.72rem',
+              fontWeight: 800,
+            }}
+          />
+          <Line
+            type="step"
+            dataKey="income"
+            stroke="#047857"
+            name="INFLOW (+)"
+            strokeWidth={2.5}
+            dot={{ r: 4, stroke: '#000', strokeWidth: 1.5, fill: '#047857' }}
+          />
+          <Line
+            type="step"
+            dataKey="expenses"
+            stroke="#B91C1C"
+            name="OUTFLOW (-)"
+            strokeWidth={2.5}
+            dot={{ r: 4, stroke: '#000', strokeWidth: 1.5, fill: '#B91C1C' }}
+          />
         </RechartsLineChart>
       </ResponsiveContainer>
     </div>

@@ -9,29 +9,35 @@ import {
 } from 'recharts';
 
 const COLORS = [
-  '#6366f1', '#f43f5e', '#10b981', '#f59e0b', '#3b82f6',
-  '#8b5cf6', '#ec4899', '#14b8a6', '#f97316', '#06b6d4',
+  '#FFB800', '#10B981', '#F43F5E', '#0284C7', '#8B5CF6',
+  '#F59E0B', '#14B8A6', '#EC4899', '#6366F1', '#64748B',
 ];
 
 export default function PieChartComponent({ data, title }) {
   if (!data || data.length === 0) {
-    return <div className="chart-empty">No data available</div>;
+    return (
+      <div style={{ padding: '40px', textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 800 }}>
+        [ NO CATEGORICAL EXPENSE DATA RECORDED ]
+      </div>
+    );
   }
 
   return (
-    <div className="chart-wrapper">
-      {title && <h3 className="chart-title">{title}</h3>}
-      <ResponsiveContainer width="100%" height={300}>
+    <div>
+      {title && <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem', fontWeight: 900, marginBottom: '12px' }}>{title}</h3>}
+      <ResponsiveContainer width="100%" height={280}>
         <RechartsPieChart>
           <Pie
             data={data}
             cx="50%"
             cy="50%"
-            innerRadius={60}
-            outerRadius={100}
-            paddingAngle={4}
+            innerRadius={55}
+            outerRadius={95}
+            paddingAngle={3}
             dataKey="value"
             nameKey="name"
+            stroke="#000000"
+            strokeWidth={1.5}
             label={({ name, percent }) =>
               `${name} ${(percent * 100).toFixed(0)}%`
             }
@@ -41,9 +47,23 @@ export default function PieChartComponent({ data, title }) {
             ))}
           </Pie>
           <Tooltip
-            formatter={(value) => `$${Number(value).toLocaleString()}`}
+            contentStyle={{
+              background: '#000000',
+              color: '#FFFFFF',
+              border: '2px solid #000000',
+              fontFamily: 'var(--font-mono)',
+              fontWeight: 800,
+              fontSize: '0.75rem',
+            }}
+            formatter={(value) => `₹${Number(value).toLocaleString('en-IN')}`}
           />
-          <Legend />
+          <Legend
+            wrapperStyle={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.72rem',
+              fontWeight: 800,
+            }}
+          />
         </RechartsPieChart>
       </ResponsiveContainer>
     </div>

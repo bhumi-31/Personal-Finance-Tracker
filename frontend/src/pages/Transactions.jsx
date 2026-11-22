@@ -4,7 +4,6 @@ import { transactionService } from '../services/transactionService';
 import TransactionList from '../components/Transaction/TransactionList';
 import TransactionForm from '../components/Transaction/TransactionForm';
 import Modal from '../components/common/Modal';
-import LoadingSpinner from '../components/common/LoadingSpinner';
 
 export default function Transactions() {
   const { user } = useAuth();
@@ -28,19 +27,17 @@ export default function Transactions() {
     [user]
   );
 
-  // Debounce search input
   useEffect(() => {
     if (debounceTimer.current) clearTimeout(debounceTimer.current);
     debounceTimer.current = setTimeout(() => {
       setDebouncedSearch(search);
       setPage(1);
-    }, 400);
+    }, 350);
     return () => {
       if (debounceTimer.current) clearTimeout(debounceTimer.current);
     };
   }, [search]);
 
-  // Build API params — use backend's snake_case names
   const fetchParams = useMemo(() => {
     const params = { page, limit: 50 };
     if (debouncedSearch) params.search = debouncedSearch;
@@ -56,12 +53,11 @@ export default function Transactions() {
     try {
       const res = await transactionService.getTransactions(fetchParams);
       const data = res.data;
-      // Backend returns: { transactions: [...], pagination: { page, limit, total, totalPages } }
       setTransactions(data.transactions || []);
       setTotalPages(data.pagination?.totalPages ?? data.totalPages ?? 1);
       setTotal(data.pagination?.total ?? data.total ?? 0);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to load transactions');
+      setError(err.response?.data?.message || 'Failed to fetch ledger rows');
     } finally {
       setLoading(false);
     }
@@ -83,12 +79,12 @@ export default function Transactions() {
 
   const handleDelete = useCallback(
     async (id) => {
-      if (!window.confirm('Are you sure you want to delete this transaction?')) return;
+      if (!window.confirm('CONFIRM PURGE: Delete this transaction record from ledger?')) return;
       try {
         await transactionService.deleteTransaction(id);
         fetchTransactions();
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to delete transaction');
+        setError(err.response?.data?.message || 'Purge operation failed');
       }
     },
     [fetchTransactions]
@@ -113,68 +109,76 @@ export default function Transactions() {
     setEditingTx(null);
   }, []);
 
-  const handleTypeChange = useCallback((e) => {
-    setTypeFilter(e.target.value);
-    setPage(1);
-  }, []);
-
-  const handleStartDateChange = useCallback((e) => {
-    setStartDate(e.target.value);
-    setPage(1);
-  }, []);
-
-  const handleEndDateChange = useCallback((e) => {
-    setEndDate(e.target.value);
-    setPage(1);
-  }, []);
-
   return (
-    <div className="transactions-page">
-      <div className="page-header">
-        <h1>Transactions</h1>
-        {canModify && (
-          <button className="btn btn-primary" onClick={handleAdd}>
-            + Add Transaction
-          </button>
-        )}
-        {!canModify && (
-          <span className="badge badge-readonly" title="Read-only access">
-            👁 View Only
-          </span>
-        )}
+    <div>
+      {/* Engine Banner (Matching Image 2) */}
+      <div className="engine-banner">
+        <div className="engine-banner-info">
+          <h1>TRANSACTION LEDGER & SETTLEMENT ENGINE</h1>
+          <p>
+            REPOSITORY MATRIX // TOTAL RECORDS: {total} // STATUS:{' '}
+            {canModify ? 'WRITE-ENABLED' : 'READ-ONLY ACCESS'}
+          </p>
+        </div>
+
+        <div>
+          {canModify ? (
+            <button className="btn-forge" onClick={handleAdd}>
+              + CREATE TRANSACTION
+            </button>
+          ) : (
+            <span className="status-pill status-readonly">
+              [ACCESS: VIEW_ONLY]
+            </span>
+          )}
+        </div>
       </div>
 
-      {/* Filters */}
-      <div className="filter-bar">
+      {/* Tactical Filter Bar */}
+      <div className="filter-bar-forge">
         <input
           type="text"
-          placeholder="Search description…"
+          placeholder="SEARCH DESCRIPTION // QUERY..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="filter-input"
+          className="filter-input-forge"
+          style={{ minWidth: '220px' }}
         />
-        <select value={typeFilter} onChange={handleTypeChange} className="filter-select">
-          <option value="">All Types</option>
-          <option value="income">Income</option>
-          <option value="expense">Expense</option>
+        <select
+          value={typeFilter}
+          onChange={(e) => {
+            setTypeFilter(e.target.value);
+            setPage(1);
+          }}
+          className="filter-select-forge"
+        >
+          <option value="">[ALL TYPES]</option>
+          <option value="income">TYPE: INFLOW (+)</option>
+          <option value="expense">TYPE: OUTFLOW (-)</option>
         </select>
         <input
           type="date"
           value={startDate}
-          onChange={handleStartDateChange}
-          className="filter-input"
-          title="From date"
+          onChange={(e) => {
+            setStartDate(e.target.value);
+            setPage(1);
+          }}
+          className="filter-input-forge"
+          title="START DATE"
         />
         <input
           type="date"
           value={endDate}
-          onChange={handleEndDateChange}
-          className="filter-input"
-          title="To date"
+          onChange={(e) => {
+            setEndDate(e.target.value);
+            setPage(1);
+          }}
+          className="filter-input-forge"
+          title="END DATE"
         />
         {(search || typeFilter || startDate || endDate) && (
           <button
-            className="btn btn-outline btn-sm"
+            className="btn-forge btn-forge-sm btn-forge-white"
             onClick={() => {
               setSearch('');
               setTypeFilter('');
@@ -183,65 +187,57 @@ export default function Transactions() {
               setPage(1);
             }}
           >
-            Clear Filters
+            [CLEAR]
           </button>
         )}
       </div>
 
-      {error && <div className="alert alert-error">{error}</div>}
+      {error && <div className="alert-forge alert-forge-error">{error}</div>}
 
-      {loading ? (
-        <div className="page-loading">
-          <LoadingSpinner size="large" />
+      {/* Transactions Matrix Table (Matching Image 2) */}
+      <TransactionList
+        transactions={transactions}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        canModify={canModify}
+      />
+
+      {/* Pagination Footer */}
+      {totalPages > 1 && (
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginTop: '20px' }}>
+          <button
+            className="btn-forge btn-forge-sm btn-forge-white"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+          >
+            ← PREV
+          </button>
+          <span
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontWeight: 800,
+              fontSize: '0.8rem',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            PAGE {page} OF {totalPages}
+          </span>
+          <button
+            className="btn-forge btn-forge-sm btn-forge-white"
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+          >
+            NEXT →
+          </button>
         </div>
-      ) : (
-        <>
-          <div className="result-meta">
-            {total > 0 && (
-              <span className="text-muted">
-                Showing {transactions.length} of {total} transaction{total !== 1 ? 's' : ''}
-              </span>
-            )}
-          </div>
-
-          <TransactionList
-            transactions={transactions}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            canModify={canModify}
-            height={520}
-          />
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="pagination">
-              <button
-                className="btn btn-outline btn-sm"
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
-              >
-                ← Prev
-              </button>
-              <span className="pagination-info">
-                Page {page} of {totalPages}
-              </span>
-              <button
-                className="btn btn-outline btn-sm"
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages}
-              >
-                Next →
-              </button>
-            </div>
-          )}
-        </>
       )}
 
-      {/* Add / Edit Modal */}
+      {/* Transaction Modal */}
       <Modal
         isOpen={modalOpen}
         onClose={handleCloseModal}
-        title={editingTx ? 'Edit Transaction' : 'Add Transaction'}
+        title={editingTx ? '★ MODIFY RECORD MATRIX' : '★ INITIALIZE NEW RECORD'}
       >
         <TransactionForm
           transaction={editingTx}

@@ -10,26 +10,31 @@ export default function Login() {
   const { login, user } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect if already logged in
   if (user) {
     navigate('/dashboard', { replace: true });
     return null;
   }
+
+  const handleQuickFill = (demoEmail, demoPassword) => {
+    setEmail(demoEmail);
+    setPassword(demoPassword);
+    setError('');
+  };
 
   const handleSubmit = useCallback(
     async (e) => {
       e.preventDefault();
       setError('');
 
-      if (!email.trim()) return setError('Email is required');
-      if (!password) return setError('Password is required');
+      if (!email.trim()) return setError('System identifier required');
+      if (!password) return setError('Security access pass required');
 
       setLoading(true);
       try {
         await login(email, password);
         navigate('/dashboard', { replace: true });
       } catch (err) {
-        setError(err.response?.data?.message || 'Invalid email or password');
+        setError(err.response?.data?.message || 'Access denied: Invalid credentials');
       } finally {
         setLoading(false);
       }
@@ -38,51 +43,99 @@ export default function Login() {
   );
 
   return (
-    <div className="auth-page">
-      <div className="auth-card">
-        <div className="auth-header">
-          <span className="auth-logo">💰</span>
-          <h1>Welcome Back</h1>
-          <p>Sign in to your Finance Tracker</p>
+    <div className="auth-page-forge">
+      <div className="auth-portal-window">
+        {/* Window Top Bar (Image 1) */}
+        <div className="auth-portal-bar">
+          <span>★ FINTRACK // OPERATIONAL AUTH PORTAL</span>
+          <span>[ - ] [ × ]</span>
         </div>
 
-        {error && <div className="alert alert-error">{error}</div>}
+        <div className="auth-portal-body">
+          <h1 className="auth-portal-title">FORGE-OS CORE</h1>
+          <p className="auth-portal-sub">[SECURITY LEVEL 4 ACCESS REQUIRED]</p>
 
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              id="email"
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
-              required
-            />
+          {error && <div className="alert-forge alert-forge-error">{error}</div>}
+
+          <form onSubmit={handleSubmit}>
+            <div className="auth-form-group">
+              <label className="auth-form-label">
+                SYSTEM IDENTIFIER (EMAIL)
+              </label>
+              <input
+                className="auth-form-input"
+                type="email"
+                placeholder="operator@fintrack.internal"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+                required
+              />
+            </div>
+
+            <div className="auth-form-group">
+              <label className="auth-form-label">
+                SECURITY ACCESS PASS
+              </label>
+              <input
+                className="auth-form-input"
+                type="password"
+                placeholder="••••••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                required
+              />
+            </div>
+
+            <button type="submit" className="btn-auth-enter" disabled={loading}>
+              {loading ? 'AUTHENTICATING...' : 'AUTHENTICATE & ENTER →'}
+            </button>
+          </form>
+
+          {/* Quick Role Selector (Demo) matching Image 1 */}
+          <div className="quick-role-section">
+            <p className="quick-role-title">★ QUICK ROLE SELECTOR (DEMO):</p>
+            <div className="quick-role-buttons">
+              <button
+                type="button"
+                className="btn-quick-role role-btn-admin"
+                onClick={() => handleQuickFill('admin@demo.com', 'admin123')}
+              >
+                ADMIN
+              </button>
+              <button
+                type="button"
+                className="btn-quick-role role-btn-user"
+                onClick={() => handleQuickFill('user@demo.com', 'user123')}
+              >
+                USER
+              </button>
+              <button
+                type="button"
+                className="btn-quick-role role-btn-readonly"
+                onClick={() => handleQuickFill('readonly@demo.com', 'readonly123')}
+              >
+                READ-ONLY
+              </button>
+            </div>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
-              id="password"
-              type="password"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-              required
-            />
+          <div style={{ textAlign: 'center', marginTop: '16px' }}>
+            <Link
+              to="/register"
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.72rem',
+                fontWeight: 800,
+                color: '#111',
+                textDecoration: 'underline',
+              }}
+            >
+              [ + INITIALIZE NEW OPERATOR ACCOUNT ]
+            </Link>
           </div>
-
-          <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign In'}
-          </button>
-        </form>
-
-        <p className="auth-footer">
-          Don't have an account? <Link to="/register">Sign up</Link>
-        </p>
+        </div>
       </div>
     </div>
   );

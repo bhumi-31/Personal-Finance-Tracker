@@ -23,14 +23,14 @@ export default function Modal({ isOpen, onClose, title, children }) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2 className="modal-title">{title}</h2>
-          <button className="modal-close" onClick={onClose} aria-label="Close">
-            ✕
+      <div className="modal-content-forge" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header-forge">
+          <span>{title}</span>
+          <button className="modal-close-forge" onClick={onClose} aria-label="Close">
+            [ × ]
           </button>
         </div>
-        <div className="modal-body">{children}</div>
+        <div className="modal-body-forge">{children}</div>
       </div>
     </div>
   );
