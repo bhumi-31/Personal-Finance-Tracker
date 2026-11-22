@@ -19,13 +19,12 @@ $$\text{Transaction Inflow / Outflow} \longrightarrow \text{Category Allocation}
 
 ## 📸 Screenshots & UI Showcase
 
-| Screen | Preview / Feature Description |
+| Screen | Preview |
 |:---|:---|
-| **Auth Portal & Quick Role Switcher** | Industrial terminal portal with one-click demo role prefill (`ADMIN`, `USER`, `READ-ONLY`). |
-| **Financial Computation Dashboard** | Real-time metric cards, Redis telemetry bar, and dynamic category pie chart. |
-| **Cash Flow Trends & Comparison** | 12-month income vs. expense line chart and comparative volume bar chart. |
-| **Transactions Ledger Matrix** | Virtualized transaction grid with debounced search, filters, and modal CRUD. |
-| **User Access & RBAC Matrix** | Admin-exclusive user registry with dynamic role elevation dropdowns. |
+| **Auth Portal & Quick Role Switcher** | ![Auth Portal](docs/screenshots/login.png) |
+| **Financial Computation Dashboard** | ![Financial Computation Dashboard](docs/screenshots/dashboard.png) |
+| **Transactions Ledger Matrix** | ![Transactions Ledger Matrix](docs/screenshots/transactions.png) |
+| **User Access & RBAC Matrix** | ![User Access & RBAC Matrix](docs/screenshots/users.png) |
 
 ---
 
