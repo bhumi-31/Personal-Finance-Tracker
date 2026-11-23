@@ -17,23 +17,9 @@ const app = express();
 
 // ── Global middleware ───────────────────────────────────────────────
 app.use(helmet());
-
-const allowedOrigins = process.env.CLIENT_URL
-  ? process.env.CLIENT_URL.split(',').map((url) => url.trim())
-  : '*';
-
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (e.g. mobile apps, curl, server-to-server)
-      if (!origin || allowedOrigins === '*' || allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-      return callback(null, true); // Fallback allow to prevent production blockages
-    },
-    credentials: true,
-  })
-);
+app.use(cors({
+  origin: process.env.CLIENT_URL,
+}));
 app.use(express.json({ limit: '10kb' }));
 
 // ── Swagger docs ────────────────────────────────────────────────────

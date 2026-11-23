@@ -25,6 +25,9 @@ async function seed() {
       { email: 'admin@demo.com', password: 'admin123', name: 'Admin User', role: 'admin' },
       { email: 'user@demo.com', password: 'user123', name: 'Demo User', role: 'user' },
       { email: 'readonly@demo.com', password: 'readonly123', name: 'Read Only User', role: 'read-only' },
+      { email: 'admin@financetracker.com', password: 'Admin@123', name: 'System Admin', role: 'admin' },
+      { email: 'user@financetracker.com', password: 'User@123', name: 'Standard User', role: 'user' },
+      { email: 'readonly@financetracker.com', password: 'Readonly@123', name: 'Read Only Auditor', role: 'read-only' },
     ];
 
     const userIds = [];
