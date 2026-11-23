@@ -24,7 +24,26 @@ app.get('/', (req, res) => {
 // ── Global middleware ───────────────────────────────────────────────
 app.use(helmet());
 app.use(cors({
-  origin: process.env.CLIENT_URL,
+  origin(origin, callback) {
+    const configuredOrigins = (process.env.CLIENT_URL || '')
+      .split(',')
+      .map((value) => value.trim())
+      .filter(Boolean);
+
+    if (
+      !origin ||
+      configuredOrigins.length === 0 ||
+      configuredOrigins.includes('*')
+    ) {
+      return callback(null, true);
+    }
+
+    if (configuredOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error(`Origin not allowed by CORS: ${origin}`));
+  },
 }));
 app.use(express.json({ limit: '10kb' }));
 
