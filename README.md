@@ -12,8 +12,55 @@ $$\text{Transaction Inflow / Outflow} \longrightarrow \text{Category Allocation}
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org)
 [![Redis](https://img.shields.io/badge/Redis-8.x-DC382D?style=for-the-badge&logo=redis&logoColor=white)](https://redis.io)
 [![JWT](https://img.shields.io/badge/JWT-Stateless-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)](https://jwt.io)
-[![Swagger](https://img.shields.io/badge/OpenAPI-Swagger_3.0-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)](http://localhost:5001/api-docs)
+[![Swagger](https://img.shields.io/badge/OpenAPI-Swagger_3.0-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)](https://personal-finance-tracker-34fa.onrender.com/api-docs/)
 [![Recharts](https://img.shields.io/badge/Recharts-2.10-22B5BF?style=for-the-badge)](https://recharts.org)
+
+---
+
+## 🚀 Live Deployment
+
+| Resource | URL |
+|:---|:---|
+| **Live Application** | [https://personal-finance-tracker-flame-chi.vercel.app/](https://personal-finance-tracker-flame-chi.vercel.app/) |
+| **Interactive Swagger API Docs** | [https://personal-finance-tracker-34fa.onrender.com/api-docs/](https://personal-finance-tracker-34fa.onrender.com/api-docs/) |
+| **Backend API** | [https://personal-finance-tracker-34fa.onrender.com](https://personal-finance-tracker-34fa.onrender.com) |
+| **GitHub Repository** | [https://github.com/bhumi-31/Personal-Finance-Tracker](https://github.com/bhumi-31/Personal-Finance-Tracker) |
+
+### Cloud Infrastructure
+
+- **Frontend:** Vercel
+- **Backend:** Render
+- **Database:** Neon PostgreSQL
+- **Cache:** Upstash Redis
+
+### Production Environment Variables
+
+Configure the following variables on Render:
+
+```env
+DATABASE_URL=your_neon_postgresql_connection_string
+REDIS_URL=your_upstash_redis_connection_string
+JWT_SECRET=your_production_jwt_secret
+JWT_EXPIRES_IN=7d
+NODE_ENV=production
+CLIENT_URL=https://personal-finance-tracker-flame-chi.vercel.app
+```
+
+Configure the following variable on Vercel:
+
+```env
+VITE_API_URL=https://personal-finance-tracker-34fa.onrender.com
+```
+
+Deploy the backend with:
+
+```bash
+npm install
+npm run seed
+npm start
+```
+
+For the frontend, use Vite as the framework preset with `frontend` as the root directory.
 
 ---
 
@@ -256,9 +303,17 @@ Use the one-click **Quick Role Selector** buttons on the Login Portal or enter c
 
 | Role | Email | Password | Permissions & Capabilities |
 |:-----|:------|:---------|:---------------------------|
-| **Admin** | `admin@demo.com` | `admin123` | Full privileges: cross-user ledger access, user role elevation, and CRUD. |
-| **User** | `user@demo.com` | `user123` | Personal CRUD operations: manage own transactions & view personal analytics. |
-| **Read-Only**| `readonly@demo.com`| `readonly123` | View-only: analytics dashboards & ledger reading. Mutations blocked. |
+| **Admin** | `admin@financetracker.com` | `Admin@123` | Full privileges: cross-user ledger access, user role elevation, and CRUD. |
+| **User** | `user@financetracker.com` | `User@123` | Personal CRUD operations: manage own transactions & view personal analytics. |
+| **Read-Only**| `readonly@financetracker.com`| `Readonly@123` | View-only: analytics dashboards & ledger reading. Mutations blocked. |
+
+Additional short-demo credentials are also seeded:
+
+| Role | Email | Password |
+|:-----|:------|:---------|
+| **Admin** | `admin@demo.com` | `admin123` |
+| **User** | `user@demo.com` | `user123` |
+| **Read-Only** | `readonly@demo.com` | `readonly123` |
 
 ### Role Permissions Enforcement Table
 
@@ -300,7 +355,9 @@ The frontend Dashboard incorporates a real-time **Cache Performance Bar** queryi
 
 ## 📡 API Reference & Swagger Documentation
 
-Interactive OpenAPI 3.0 documentation is served live at: **`http://localhost:5001/api-docs`**
+Interactive OpenAPI 3.0 documentation is served at:
+- **Production:** [https://personal-finance-tracker-34fa.onrender.com/api-docs/](https://personal-finance-tracker-34fa.onrender.com/api-docs/)
+- **Local development:** `http://localhost:5001/api-docs`
 
 | Method | Route | Description | Auth | Rate Limit |
 |:---|:---|:---|:---:|:---:|
