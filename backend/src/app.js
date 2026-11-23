@@ -38,6 +38,15 @@ app.use(cors({
       return callback(null, true);
     }
 
+    try {
+      const originUrl = new URL(origin);
+      if (originUrl.protocol === 'https:' && originUrl.hostname.endsWith('.vercel.app')) {
+        return callback(null, true);
+      }
+    } catch {
+      // Fall through to the configured-origin check below.
+    }
+
     if (configuredOrigins.includes(origin)) {
       return callback(null, true);
     }
