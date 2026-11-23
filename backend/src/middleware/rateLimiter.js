@@ -5,7 +5,8 @@ import rateLimit from 'express-rate-limit';
  */
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: process.env.NODE_ENV === 'production' ? 5 : 100,
+  max: 50, // generous limit with skipSuccessfulRequests to prevent demo lockout
+  skipSuccessfulRequests: true,
   standardHeaders: true,
   legacyHeaders: false,
   message: { message: 'Too many authentication attempts. Please try again after 15 minutes.' },

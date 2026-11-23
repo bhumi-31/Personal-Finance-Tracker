@@ -14,6 +14,12 @@ import userRoutes from './routes/users.js';
 import categoryRoutes from './routes/categories.js';
 
 const app = express();
+app.set('trust proxy', 1);
+
+// ── Root redirect to API Docs ───────────────────────────────────────
+app.get('/', (req, res) => {
+  res.redirect('/api-docs');
+});
 
 // ── Global middleware ───────────────────────────────────────────────
 app.use(helmet());
